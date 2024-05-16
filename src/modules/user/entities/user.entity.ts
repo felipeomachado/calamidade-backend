@@ -10,6 +10,8 @@ import {
   BeforeInsert,
   BeforeUpdate,
   AfterLoad,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import { UserRole } from './user-role.entity';
 import { UserStatus } from './user-status.entity';
@@ -19,6 +21,7 @@ import { EntityHelper } from 'src/utils/entity-helper';
 import { AuthProvidersEnum } from 'src/modules/auth/auth-providers.enum';
 import { Exclude, Expose } from 'class-transformer';
 import { OrganizationEntity } from 'src/modules/organization/entities/organization.entity';
+import { Cooperated } from '../../cooperated/entities/cooperated.entity';
 
 @Entity({ name: 'user' })
 export class User extends EntityHelper {
@@ -69,6 +72,15 @@ export class User extends EntityHelper {
   @Expose({ groups: ['me', 'admin'] })
   lastName: string | null;
 
+  @Index()
+  @Column({ type: 'varchar', nullable: true })
+  @Expose({ groups: ['me', 'admin'] })
+  document: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  @Expose({ groups: ['me', 'admin'] })
+  telephone: string;
+
   @ManyToOne(() => FileEntity, { eager: true })
   photo?: FileEntity | null;
 
@@ -81,6 +93,10 @@ export class User extends EntityHelper {
 
   @ManyToOne(() => UserStatus, { eager: true })
   status?: UserStatus;
+
+  @OneToOne(() => Cooperated)
+  @JoinColumn()
+  cooperated: Cooperated
 
   @Column({ type: 'varchar', nullable: true })
   @Index()

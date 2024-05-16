@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '../entities/user-role.entity';
 import {
   IsEmail,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   MinLength,
@@ -39,6 +40,19 @@ export class CreateUserDto {
   @ApiProperty({ example: 'Stark' })
   @IsNotEmpty()
   lastName: string | null;
+
+  @ApiProperty({ example: '99999999999' })
+  @IsNotEmpty()
+  document: string;
+
+  @ApiProperty({ example: '99999999999' })
+  @IsNotEmpty()
+  telephone: string;
+
+  @ApiProperty({ required: true, example: 123 })
+  @IsInt()
+  @IsNotEmpty()
+  cooperatedId: number
 
   @ApiProperty({ type: () => FileEntity })
   @IsOptional()

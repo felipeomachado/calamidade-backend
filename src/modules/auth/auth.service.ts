@@ -168,6 +168,9 @@ export class AuthService {
         email: socialEmail ?? null,
         firstName: socialData.firstName ?? null,
         lastName: socialData.lastName ?? null,
+        document: '', // TODO - verificar se esses campos vem do backend para social login qundo for utilizar (provavel em uma v2)
+        telephone: '', 
+        cooperatedId: 1,
         socialId: socialData.id,
         provider: authProvider,
         role,

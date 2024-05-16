@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
@@ -7,20 +7,40 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { NullableType } from '../../utils/types/nullable.type';
 import { OrganizationEntity } from '../organization/entities/organization.entity';
+import { Cooperated } from '../cooperated/entities/cooperated.entity';
+import { ResourceNotFoundException } from '../../infrastructure/exceptions/resource-not-found.exception';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(Cooperated)
+    private cooperatedRepository: Repository<Cooperated>,
     @InjectRepository(OrganizationEntity)
-    private organizationRepository: Repository<OrganizationEntity>
-    
+    private organizationRepository: Repository<OrganizationEntity>,
   ) {}
 
-  create(createUser: CreateUserDto): Promise<User> {
-    return this.usersRepository.save(
-      this.usersRepository.create(createUser),
+  async create(createUser: CreateUserDto): Promise<User> {
+    var cooperated = await this.cooperatedRepository.findOne({where: {id: createUser.cooperatedId}})
+
+    if(!cooperated) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            cooperated: 'cooperatedNotFound',
+          },
+        },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    return await this.usersRepository.save(
+      this.usersRepository.create({
+        ...createUser,
+        cooperated
+      }),
     );
   }
 
